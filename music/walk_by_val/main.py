@@ -572,6 +572,70 @@ def set_key(keyname):
         base_key_id = [0,2,4,5,7,9,11]
     elif(keyname == "black"):
         base_key_id = [  1,3,   6, 8, 10]
+    elif(keyname[len(keyname)-2:len(keyname)] == "mj"):
+        base_major_key_id = [0,2,4,5,7,9,11]
+        if(keyname ==    "Af_mj"):
+            base_key_id = list(np.array(base_major_key_id) - 4)
+        elif(keyname == "A_mj"):
+            base_key_id = list(np.array(base_major_key_id) - 3)
+        elif(keyname == "Bf_mj"):
+            base_key_id = list(np.array(base_major_key_id) - 2)
+        elif(keyname == "B_mj"):
+            base_key_id = list(np.array(base_major_key_id) - 1)
+        elif(keyname == "Cf_mj"):
+            base_key_id = list(np.array(base_major_key_id) - 1)
+        elif(keyname == "C_mj"):
+            base_key_id = list(np.array(base_major_key_id) + 0)
+        elif(keyname == "Cs_mj"):
+            base_key_id = list(np.array(base_major_key_id) + 1)
+        elif(keyname == "Df_mj"):
+            base_key_id = list(np.array(base_major_key_id) + 1)
+        elif(keyname == "D_mj"):
+            base_key_id = list(np.array(base_major_key_id) + 2)
+        elif(keyname == "Eb_mj"):
+            base_key_id = list(np.array(base_major_key_id) + 3)
+        elif(keyname == "E_mj"):
+            base_key_id = list(np.array(base_major_key_id) + 4)
+        elif(keyname == "F_mj"):
+            base_key_id = list(np.array(base_major_key_id) + 5)
+        elif(keyname == "Fs_mj"):
+            base_key_id = list(np.array(base_major_key_id) + 6)
+        elif(keyname == "Gf_mj"):
+            base_key_id = list(np.array(base_major_key_id) + 6)
+        elif(keyname == "G_mj"):
+            base_key_id = list(np.array(base_major_key_id) + 7)
+    elif(keyname[len(keyname)-2:len(keyname)] == "mn"):
+        base_major_key_id = [0,2,3,5,7,8,10,12]
+        if(keyname ==    "Af_mn"):
+            base_key_id = list(np.array(base_major_key_id) - 4)
+        elif(keyname == "A_mn"):
+            base_key_id = list(np.array(base_major_key_id) - 3)
+        elif(keyname == "As_mn"):
+            base_key_id = list(np.array(base_major_key_id) - 2)
+        elif(keyname == "Bf_mn"):
+            base_key_id = list(np.array(base_major_key_id) - 2)
+        elif(keyname == "B_mn"):
+            base_key_id = list(np.array(base_major_key_id) - 1)
+        elif(keyname == "C_mn"):
+            base_key_id = list(np.array(base_major_key_id) + 0)
+        elif(keyname == "Cs_mn"):
+            base_key_id = list(np.array(base_major_key_id) + 1)
+        elif(keyname == "D_mn"):
+            base_key_id = list(np.array(base_major_key_id) + 2)
+        elif(keyname == "Ds_mn"):
+            base_key_id = list(np.array(base_major_key_id) + 3)
+        elif(keyname == "Ef_mn"):
+            base_key_id = list(np.array(base_major_key_id) + 3)
+        elif(keyname == "E_mn"):
+            base_key_id = list(np.array(base_major_key_id) + 4)
+        elif(keyname == "F_mn"):
+            base_key_id = list(np.array(base_major_key_id) + 5)
+        elif(keyname == "Fs_mn"):
+            base_key_id = list(np.array(base_major_key_id) + 6)
+        elif(keyname == "G_mn"):
+            base_key_id = list(np.array(base_major_key_id) + 7)
+        elif(keyname == "Gs_mn"):
+            base_key_id = list(np.array(base_major_key_id) + 8)
         
     octave_num = len(base_key_id)
     
@@ -591,7 +655,7 @@ def value2freq(first_octave, plus_octave, key_id_shift, all_key_id, octave_num, 
     key_id_gap = last_key_id - first_key_id
 
     key_id = all_key_id[ int( first_key_id + key_id_gap * normalized_value ) ]
-    freq = 16.35 * (( math.pow(2.0, key_id) ) ** (1.0/12.0))
+    freq = 16.35159783 * ( (math.pow(2.0, key_id))**(1.0/12.0) )
 
     return(freq)
 
@@ -709,6 +773,7 @@ sr = 44100 # sampling rate
 #img = cv2.imread("../../_fig/_others/keitasumiya.jpg")
 #img = cv2.imread("../../_fig/picasso/crying_woman.jpg")
 img = cv2.imread("../../_fig/goch/cafe_terrace_at_night.jpg")
+img_name = "goch"
 #img = cv2.imread("../../_fig/_others/miporin.jpg")
 #img = cv2.imread("../../_fig/monet/woman_withparasol.jpg")
 img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
@@ -769,8 +834,8 @@ ax3.plot(path_v)
 is_cut_loop = 0
 cut_loop_num = 1
 is_loop = 0
-keyname = "white"
-first_octave = 3 # ex: 0=[C0, C#0, ..., C1] for "all"
+keyname = "C_mj"
+first_octave = 4 # ex: 0=[C0, C#0, ..., C1] for "all"
 plus_octave = 1
 key_id_shift = 0 # ex: 0=C=ド for "all"
 
@@ -900,8 +965,8 @@ ax3.plot(path_v)
 is_cut_loop = 1
 cut_loop_num = 1
 is_loop = 1
-keyname = "white"
-first_octave = 2 # ex: 0=[C0, C#0, ..., C1] for "all"
+keyname = "C_mj"
+first_octave = 3 # ex: 0=[C0, C#0, ..., C1] for "all"
 plus_octave = 1
 key_id_shift = 0 # ex: 0=C=ド for "all"
 loop_count = 4
@@ -991,7 +1056,7 @@ unified_sound_wave = unify1d(1*unified_sound_wave_melody, 1*unified_sound_wave_l
 max_amp = max(abs(unified_sound_wave))
 print(max_amp)
 unified_sound_wave = unified_sound_wave/max_amp
-wavwrite(unified_sound_wave,"music_"+prm_mldy+"_"+prm_loop+".wav")
+wavwrite(unified_sound_wave,"music_"+prm_mldy+"_"+prm_loop+"_"+img_name+".wav")
 
 
 # In[ ]:
