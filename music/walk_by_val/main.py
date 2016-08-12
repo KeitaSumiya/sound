@@ -6,6 +6,17 @@
 # - 画像を音楽に変換するプログラム. 
 # - defの集まり > main という構成. 
 # - 音楽制作はmelodyとloop(の繰り返し)の2種類で構成している. 
+# 
+# ## 課題
+# - 音色の充実
+# - エフェクトの作成
+# - 画像解析(顔認識など)の利用
+# - 機械学習の利用
+# - うなり機能の追加
+# - ループの変化
+# - 再分解して和音を作る -> 分解解像度を注意する必要が出てくる. 2音が最低和音数. 3音での和音にするためには分割をどうするか?
+# - ampにゆらぎを加える
+# - 1/fゆらぎ: power = 1/freq
 
 # # Def /////////////////////////////////////////////////
 
@@ -21,6 +32,7 @@ import time
 import math
 import wave
 import struct
+import random
 
 
 # # image
@@ -558,7 +570,36 @@ def makewave(amp, freq, T, sr, aparam):
     for t in np.arange( 0., T+dt, dt ) :
         # 倍音作成のためにwaveFnが複数ある. 
         w = ampFn(2, t, t0, T, amp, aparam) * ( waveFn(1, t, 0, 1, freq) + waveFn(1, t, 0, 1, 2*freq)/4 + waveFn(1, t, 0, 1, 3*freq)/6 + waveFn(1, t, 0, 1, 4*freq)/8 )
+#        w = np.sin(2*np.pi * freq*t) + np.sin(2*np.pi * freq*t)*0.5*random.uniform(-1,1)
+#        w = ampFn(2, t, t0, T, amp, aparam) * np.sin(2*np.pi * freq*t) + np.sin(2*np.pi * freq*t)*0.5*random.uniform(-1,1)
+#        is_random = random.random()
+#        random_value = 0
+#        if is_random > 0.9:
+#            random_value = random.uniform(-1,1)*random.uniform(-1,1)
+#        w = np.sin(2*np.pi * freq*t) + random_value
+
         outwave.append(w)
+    return(outwave)
+
+def makewave2(amp, freq, T, sr, aparam):
+    outwave = []
+    dt = 1/sr
+    t0 = 0
+    period_freq = 1/freq
+    wave_period_freq = []
+    for t in np.arange( 0., period_freq+dt, dt ) :
+        w = random.uniform(-1,1)
+#        w = random.uniform(-1,1) * np.sin(2*np.pi * freq*t)
+        wave_period_freq.append(w)
+        
+    base_wave = int(T*freq+1)*wave_period_freq
+
+    i = 0
+    for t in np.arange( 0., T+dt, dt ) :
+        w = ampFn(2, t, t0, T, amp, aparam) * base_wave[i]
+        outwave.append(w)
+        i += 1
+    
     return(outwave)
 
 
@@ -574,15 +615,7 @@ def set_key(keyname):
         base_key_id = [  1,3,   6, 8, 10]
     elif(keyname[len(keyname)-2:len(keyname)] == "mj"):
         base_major_key_id = [0,2,4,5,7,9,11]
-        if(keyname ==    "Af_mj"):
-            base_key_id = list(np.array(base_major_key_id) - 4)
-        elif(keyname == "A_mj"):
-            base_key_id = list(np.array(base_major_key_id) - 3)
-        elif(keyname == "Bf_mj"):
-            base_key_id = list(np.array(base_major_key_id) - 2)
-        elif(keyname == "B_mj"):
-            base_key_id = list(np.array(base_major_key_id) - 1)
-        elif(keyname == "Cf_mj"):
+        if(keyname ==    "Cf_mj"):
             base_key_id = list(np.array(base_major_key_id) - 1)
         elif(keyname == "C_mj"):
             base_key_id = list(np.array(base_major_key_id) + 0)
@@ -604,19 +637,17 @@ def set_key(keyname):
             base_key_id = list(np.array(base_major_key_id) + 6)
         elif(keyname == "G_mj"):
             base_key_id = list(np.array(base_major_key_id) + 7)
+        elif(keyname == "Af_mj"):
+            base_key_id = list(np.array(base_major_key_id) + 8)
+        elif(keyname == "A_mj"):
+            base_key_id = list(np.array(base_major_key_id) + 9)
+        elif(keyname == "Bf_mj"):
+            base_key_id = list(np.array(base_major_key_id) +10)
+        elif(keyname == "B_mj"):
+            base_key_id = list(np.array(base_major_key_id) + 11)
     elif(keyname[len(keyname)-2:len(keyname)] == "mn"):
         base_major_key_id = [0,2,3,5,7,8,10,12]
-        if(keyname ==    "Af_mn"):
-            base_key_id = list(np.array(base_major_key_id) - 4)
-        elif(keyname == "A_mn"):
-            base_key_id = list(np.array(base_major_key_id) - 3)
-        elif(keyname == "As_mn"):
-            base_key_id = list(np.array(base_major_key_id) - 2)
-        elif(keyname == "Bf_mn"):
-            base_key_id = list(np.array(base_major_key_id) - 2)
-        elif(keyname == "B_mn"):
-            base_key_id = list(np.array(base_major_key_id) - 1)
-        elif(keyname == "C_mn"):
+        if(keyname ==    "C_mn"):
             base_key_id = list(np.array(base_major_key_id) + 0)
         elif(keyname == "Cs_mn"):
             base_key_id = list(np.array(base_major_key_id) + 1)
@@ -636,6 +667,16 @@ def set_key(keyname):
             base_key_id = list(np.array(base_major_key_id) + 7)
         elif(keyname == "Gs_mn"):
             base_key_id = list(np.array(base_major_key_id) + 8)
+        elif(keyname == "Af_mn"):
+            base_key_id = list(np.array(base_major_key_id) + 8)
+        elif(keyname == "A_mn"):
+            base_key_id = list(np.array(base_major_key_id) + 9)
+        elif(keyname == "As_mn"):
+            base_key_id = list(np.array(base_major_key_id) + 10)
+        elif(keyname == "Bf_mn"):
+            base_key_id = list(np.array(base_major_key_id) + 10)
+        elif(keyname == "B_mn"):
+            base_key_id = list(np.array(base_major_key_id) + 11)
         
     octave_num = len(base_key_id)
     
@@ -770,12 +811,20 @@ sr = 44100 # sampling rate
 
 # In[24]:
 
+#img = cv2.imread("../../_fig/_others/akihiro.jpg")
+#img_name = "akihiro"
 #img = cv2.imread("../../_fig/_others/keitasumiya.jpg")
-#img = cv2.imread("../../_fig/picasso/crying_woman.jpg")
-img = cv2.imread("../../_fig/goch/cafe_terrace_at_night.jpg")
-img_name = "goch"
+#img_name = "ks"
+img = cv2.imread("../../_fig/picasso/crying_woman.jpg")
+img_name = "picasso"
+#img = cv2.imread("../../_fig/goch/cafe_terrace_at_night.jpg")
+#img_name = "goch"
 #img = cv2.imread("../../_fig/_others/miporin.jpg")
+#img_name = "miporin"
+#img = cv2.imread("../../_fig/_others/miporin_face.jpg")
+#img_name = "miporin_face"
 #img = cv2.imread("../../_fig/monet/woman_withparasol.jpg")
+#img_name = "monet"
 img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
 #height, width, channels = img.shape
 print(img.shape)
@@ -834,13 +883,13 @@ ax3.plot(path_v)
 is_cut_loop = 0
 cut_loop_num = 1
 is_loop = 0
-keyname = "C_mj"
-first_octave = 4 # ex: 0=[C0, C#0, ..., C1] for "all"
+keyname = "F_mj"
+first_octave = 3 # ex: 0=[C0, C#0, ..., C1] for "all"
 plus_octave = 1
 key_id_shift = 0 # ex: 0=C=ド for "all"
 
-first_time_ratio = 2
-time_length_ratio = 4
+first_time_ratio = 8
+time_length_ratio = 12
 isnt_degeneratable = 1
 bpm = 150
 loop_count = 8
@@ -965,8 +1014,8 @@ ax3.plot(path_v)
 is_cut_loop = 1
 cut_loop_num = 1
 is_loop = 1
-keyname = "C_mj"
-first_octave = 3 # ex: 0=[C0, C#0, ..., C1] for "all"
+keyname = "F_mj"
+first_octave = 2 # ex: 0=[C0, C#0, ..., C1] for "all"
 plus_octave = 1
 key_id_shift = 0 # ex: 0=C=ド for "all"
 loop_count = 4
@@ -983,6 +1032,9 @@ time_element   = time_1count/2
 time_1loop       = loop_count*time_1count
 
 unified_sound_wave, path_freq, path_first_time, path_time_length = path2wave(path_normalized_hsv, keyname, first_octave, plus_octave, key_id_shift, first_time_ratio, time_length_ratio, isnt_degeneratable, bpm, loop_count, len_id_usage)
+whole_time_length = len(unified_sound_wave)/sr
+print(len(unified_sound_wave))
+print(whole_time_length, 'sec')
 if is_cut_loop == 1:
     len_1loop = int(cut_loop_num*time_1loop*sr)
     unified_sound_wave = unified_sound_wave[0:len_1loop]
