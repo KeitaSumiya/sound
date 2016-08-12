@@ -83,6 +83,12 @@ partition_num_height = 10
 last_path_order = 100
 first_shift = 1
 repeatable_num = 3
+is_loop = 0
+
+if is_loop == 0 :
+    mode_name = "mldy"
+elif is_loop == 1 :
+    mode_name = "loop"
 
 log_id, reduced_rgb, reduced_hsv = img2path(img, partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num)
 
@@ -95,7 +101,7 @@ print(log_id)
 # In[6]:
 
 img_size = 400 # pixel
-reduced_color_img = mk_reduced_color_img(img_size, partition_num_width, partition_num_height, log_id, reduced_rgb, "melody")
+reduced_color_img = mk_reduced_color_img(img_size, partition_num_width, partition_num_height, log_id, reduced_rgb, mode_name)
 plt.imshow(reduced_color_img)
 
 
@@ -124,7 +130,6 @@ ax3.plot(path_v)
 
 is_cut_loop = 0
 cut_loop_num = 1
-is_loop = 0
 keyname = "F_mj"
 first_octave = 3 # ex: 0=[C0, C#0, ..., C1] for "all"
 plus_octave = 1
@@ -188,7 +193,7 @@ wavwrite(unified_sound_wave,"music_w"+str(partition_num_width)+"h"+str(partition
 
 img_prm = [partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num]
 msc_prm = [is_cut_loop, cut_loop_num, is_loop, keyname, first_octave, plus_octave, key_id_shift, loop_count, first_time_ratio, time_length_ratio, isnt_degeneratable, bpm, len_id_usage]
-prm_mldy = 'mldy_' + '-'.join(list(map(str, img_prm))) + '_' + '-'.join(list(map(str, msc_prm)))
+prm_mldy = mode_name+'_' + '-'.join(list(map(str, img_prm))) + '_' + '-'.join(list(map(str, msc_prm)))
 prm_mldy
 
 
@@ -213,6 +218,12 @@ partition_num_height = 3
 last_path_order = 100
 first_shift = 1
 repeatable_num = 3
+is_loop = 1
+
+if is_loop == 0 :
+    mode_name = "mldy"
+elif is_loop == 1 :
+    mode_name = "loop"
 
 log_id, reduced_rgb, reduced_hsv = img2path(img, partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num)
 
@@ -226,7 +237,7 @@ print(len(log_id))
 # In[15]:
 
 img_size = 400 # pixel
-reduced_color_img = mk_reduced_color_img(img_size, partition_num_width, partition_num_height, log_id, reduced_rgb, "loop")
+reduced_color_img = mk_reduced_color_img(img_size, partition_num_width, partition_num_height, log_id, reduced_rgb, mode_name)
 plt.imshow(reduced_color_img)
 
 
@@ -255,7 +266,6 @@ ax3.plot(path_v)
 
 is_cut_loop = 1
 cut_loop_num = 1
-is_loop = 1
 keyname = "F_mj"
 first_octave = 2 # ex: 0=[C0, C#0, ..., C1] for "all"
 plus_octave = 1
@@ -322,7 +332,7 @@ wavwrite(unified_sound_wave,"music_w"+str(partition_num_width)+"h"+str(partition
 
 img_prm = [partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num]
 msc_prm = [is_cut_loop, cut_loop_num, is_loop, keyname, first_octave, plus_octave, key_id_shift, loop_count, first_time_ratio, time_length_ratio, isnt_degeneratable, bpm, len_id_usage]
-prm_loop = 'loop_' + '-'.join(list(map(str, img_prm))) + '_' + '-'.join(list(map(str, msc_prm)))
+prm_loop = mode_name+'_' + '-'.join(list(map(str, img_prm))) + '_' + '-'.join(list(map(str, msc_prm)))
 prm_loop
 
 
@@ -363,6 +373,21 @@ wavwrite(unified_sound_wave,"music_"+prm_mldy+"_"+prm_loop+"_"+img_name+".wav")
 end_whole_time = time.time()
 elapsed_whole_time = end_whole_time - start_whole_time
 print(elapsed_whole_time, "sec   ", elapsed_whole_time/60, "min   ", elapsed_whole_time/3600, "hour")
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
+
+
+# In[ ]:
+
+
 
 
 # In[ ]:

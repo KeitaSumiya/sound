@@ -315,7 +315,7 @@ def mk_reduced_color_img(img_size, partition_num_width, partition_num_height, lo
         pt_pt2   = [img_pt2[0] -  pointer_edge_px - 1, img_pt2[1] -  pointer_edge_px - 1]
         cv2.rectangle(reduced_color_img, (img_pt1[0], img_pt1[1]), (img_pt2[0], img_pt2[1]), reduced_rgb[id_height, id_width], -1, 0)
         cv2.rectangle(reduced_color_img, (pt_pt1[0],    pt_pt1[1]),   (pt_pt2[0],    pt_pt2[1]),   np.array([255.,255.,255.]),            -1, 0)
-        cv2.imwrite("path_"+label_name+"/reduced_color_img_"+str(path_order)+".jpg", cv2.cvtColor(reduced_color_img,cv2.COLOR_RGB2BGR) )
+        cv2.imwrite("path/"+label_name+"_reduced_color_img_"+str(path_order)+".jpg", cv2.cvtColor(reduced_color_img,cv2.COLOR_RGB2BGR) )
         cv2.rectangle(reduced_color_img, (img_pt1[0], img_pt1[1]), (img_pt2[0], img_pt2[1]), reduced_rgb[id_height, id_width], -1, 0)
 
     return(reduced_color_img)
