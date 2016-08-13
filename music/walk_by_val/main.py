@@ -10,7 +10,11 @@ import music
 start_whole_time = time.time()
 sr = 44100 # sampling rate
 
+<<<<<<< HEAD
 img = cv2.imread("/Users/koichi-sakaguchi/prv/private/chaofan.jpg")
+=======
+img = cv2.imread("../../_fig/picasso/crying_woman.jpg")
+>>>>>>> upstream/master
 img_name = "picasso"
 img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
 
