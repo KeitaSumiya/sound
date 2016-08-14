@@ -194,14 +194,14 @@ def jump_unknown(present_id, unique_past_id, unique_all_id, reduced_color, selec
     next_id = decide_next(present_id, rest_id, reduced_color, selection_mode)
     return(next_id)
 
-def mk_reduced_color_img(img_size, partition_num_width, partition_num_height, log_id, reduced_rgb, label_name):
+def mk_reduced_color_img(img_size, partition_num_width, partition_num_height, path_id, reduced_rgb, label_name):
     element_img_size = int(img_size/max([partition_num_height, partition_num_width])) # pixel
     print(element_img_size)
     reduced_color_img = np.zeros((element_img_size*partition_num_height, element_img_size*partition_num_width, 3), np.uint8)
     pointer_edge_px = int(element_img_size/3)
 
-    for path_order in range(len(log_id)):
-        id_width, id_height = log_id[path_order]
+    for path_order in range(len(path_id)):
+        id_width, id_height = path_id[path_order]
 
         img_pt1 = [element_img_size*id_width,                 element_img_size*id_height]
         img_pt2 = [element_img_size*(id_width + 1) - 1, element_img_size*(id_height + 1) - 1]
@@ -225,10 +225,10 @@ def normalize1d(array):
     
     return(normalized_array)
 
-def path_array(log_id, input_array):
+def path_array(path_id, input_array):
     array = []
-    for path_order in range(len(log_id)):
-        id_width, id_height = log_id[path_order]
+    for path_order in range(len(path_id)):
+        id_width, id_height = path_id[path_order]
         array.append(input_array[id_height, id_width])
     array = np.array(array)
     return(array)
@@ -288,7 +288,7 @@ def img2path(img, partition_num_width, partition_num_height, last_path_order, fi
     while (len(unique_past_id) != len(unique_all_id)) and (path_order <= last_path_order) :
         if(path_order == 0):
             present_id = [first_id_width, first_id_height]
-            log_id = [present_id]
+            path_id = [present_id]
             shift = first_shift
             shift_lst = []
             for i in range(partition_num_height):
@@ -300,7 +300,7 @@ def img2path(img, partition_num_width, partition_num_height, last_path_order, fi
         if(path_order >= 1):
             previous_id = present_id
             present_id = next_id
-            log_id.append(present_id)
+            path_id.append(present_id)
             shift, shift_lst = decide_shift(present_id, unique_past_id, shift_lst)
 
         candidates = make_all_candidate(present_id, shift)
@@ -322,4 +322,27 @@ def img2path(img, partition_num_width, partition_num_height, last_path_order, fi
         path_order += 1
         
         
-    return(log_id, reduced_rgb, reduced_hsv)
+    return(path_id, reduced_rgb, reduced_hsv)
+
+
+def img2path_hsv(img, img_prm):
+    partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num, is_loop = img_prm
+
+    if is_loop == 0 :
+        mode_name = "mldy"
+    elif is_loop == 1 :
+        mode_name = "loop"
+
+    path_id, reduced_rgb, reduced_hsv = img2path(img, partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num)
+
+    path_h = path_array(path_id, reduced_hsv[:,:,0])
+    path_s = path_array(path_id, reduced_hsv[:,:,1])
+    path_v = path_array(path_id, reduced_hsv[:,:,2])
+
+    path_normalized_h = (path_h)/360
+    path_normalized_s = (path_s)/1
+    path_normalized_v = (path_v)/1
+    path_normalized_hsv = [path_normalized_h, path_normalized_s, path_normalized_v]
+
+    return(path_normalized_hsv)
+

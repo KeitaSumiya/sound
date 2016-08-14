@@ -256,6 +256,7 @@ def path2wave(path_normalized_hsv, keyname, first_octave, plus_octave, key_id_sh
         nml_h = path_normalized_h[path_order]
         nml_s = path_normalized_s[path_order]
         nml_v = path_normalized_v[path_order]
+#        print(nml_h, nml_s, nml_v)
 
         freq = value2freq(first_octave, plus_octave, key_id_shift, all_key_id, octave_num, nml_h)
         path_freq.append(freq)
@@ -276,4 +277,51 @@ def path2wave(path_normalized_hsv, keyname, first_octave, plus_octave, key_id_sh
             unified_sound_wave = unify1d(sound_wave, unified_sound_wave)
 
     return(unified_sound_wave, path_freq, path_first_time, path_time_length)
+
+
+
+
+def path_hsv2wave(path_normalized_hsv, msc_prm):
+    keyname, first_octave, plus_octave, key_id_shift, first_time_ratio, time_length_ratio, isnt_degeneratable, bpm, loop_count, sr, is_loop, is_cut_loop, cut_loop_num, whole_wave_length = msc_prm
+
+    if is_loop == 0 :
+        mode_name = "mldy"
+    elif is_loop == 1 :
+        mode_name = "loop"
+
+#    len_id_usage = len(path_normalized_hsv)
+    len_id_usage = np.array(path_normalized_hsv).shape[1]
+    bps = bpm/60
+    time_1count    = 1/bps
+    time_element   = time_1count/2
+    time_1loop       = loop_count*time_1count
+
+    unified_sound_wave, path_freq, path_first_time, path_time_length = path2wave(path_normalized_hsv, keyname, first_octave, plus_octave, key_id_shift, first_time_ratio, time_length_ratio, isnt_degeneratable, bpm, loop_count, len_id_usage, sr)
+    if is_cut_loop == 1:
+        len_1loop = int(cut_loop_num*time_1loop*sr)
+        unified_sound_wave = unified_sound_wave[0:len_1loop]
+        path_freq = path_freq[0:len_1loop]
+        path_first_time = path_first_time[0:len_1loop]
+        path_time_length = path_time_length[0:len_1loop]
+
+
+#    print(path_freq)
+#    print(path_first_time)
+#    print(path_time_length)
+
+    raw_unified_sound_wave = unified_sound_wave
+
+    whole_time_length = len(unified_sound_wave)/sr
+
+    if is_loop == 1:
+        unified_sound_wave = np.array(int(whole_wave_length/len(raw_unified_sound_wave) + 1)*list(raw_unified_sound_wave))
+        unified_sound_wave_loop = unified_sound_wave    
+
+    max_amp = max(abs(unified_sound_wave))
+    unified_sound_wave = unified_sound_wave/max_amp
+    wavwrite(unified_sound_wave,"music_"+mode_name+".wav")
+
+    return(unified_sound_wave)
+
+
 
