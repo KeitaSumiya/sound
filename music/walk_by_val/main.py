@@ -6,12 +6,16 @@ import random
 import time
 import image
 import music
+import sys
+
 
 start_whole_time = time.time()
 sr = 44100 # sampling rate
 
-img = cv2.imread("../../_fig/picasso/crying_woman.jpg")
+img_input= sys.argv[1]
 img_name = "picasso"
+
+img = cv2.imread(img_input)
 img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
 
 partition_num_width = 10
