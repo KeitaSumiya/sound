@@ -12,7 +12,7 @@ import sys
 start_whole_time = time.time()
 sr = 44100 # sampling rate
 
-img_input= sys.argv[1]
+img_input= str(sys.argv[1])
 img_name = "picasso"
 
 img = cv2.imread(img_input)
