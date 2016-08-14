@@ -326,12 +326,7 @@ def img2path(img, partition_num_width, partition_num_height, last_path_order, fi
 
 
 def img2path_hsv(img, img_prm):
-    partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num, is_loop = img_prm
-
-    if is_loop == 0 :
-        mode_name = "mldy"
-    elif is_loop == 1 :
-        mode_name = "loop"
+    partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num = img_prm
 
     path_id, reduced_rgb, reduced_hsv = img2path(img, partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num)
 

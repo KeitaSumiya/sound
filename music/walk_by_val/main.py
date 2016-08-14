@@ -14,7 +14,6 @@ start_whole_time = time.time()
 sr = 44100 # sampling rate
 
 img_input= str(sys.argv[1])
-img_name = "picasso"
 
 img = cv2.imread(img_input)
 img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
@@ -27,6 +26,7 @@ partition_num_height = 10
 last_path_order = 20
 first_shift = 1
 repeatable_num = 3
+img_prm = [partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num]
 
 ## music parameters -------------
 is_loop = 0
@@ -42,8 +42,6 @@ isnt_degeneratable = 1
 bpm = 150
 loop_count = 8
 whole_wave_length = 0
-
-img_prm = [partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num, is_loop]
 msc_prm = [keyname, first_octave, plus_octave, key_id_shift, first_time_ratio, time_length_ratio, isnt_degeneratable, bpm, loop_count, sr, is_loop, is_cut_loop, cut_loop_num, whole_wave_length]
 
 ## img2wave -------------
@@ -57,6 +55,7 @@ partition_num_height = 3
 last_path_order = 100
 first_shift = 1
 repeatable_num = 3
+img_prm = [partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num]
 
 ## music parameters -------------
 is_loop = 1
@@ -72,8 +71,6 @@ isnt_degeneratable = 0
 bpm = 150
 loop_count = 4
 whole_wave_length = len(melody_wave)
-
-img_prm = [partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num, is_loop]
 msc_prm = [keyname, first_octave, plus_octave, key_id_shift, first_time_ratio, time_length_ratio, isnt_degeneratable, bpm, loop_count, sr, is_loop, is_cut_loop, cut_loop_num, whole_wave_length]
 ## img2wave -------------
 path_hsv = image.img2path_hsv(img, img_prm)
@@ -86,7 +83,7 @@ unified_sound_wave = music.unify1d(1*melody_wave, 1*loop_wave)
 max_amp = max(abs(unified_sound_wave))
 print(max_amp)
 unified_sound_wave = unified_sound_wave/max_amp
-music.wavwrite(unified_sound_wave,"music_"+img_name+".wav")
+music.wavwrite(unified_sound_wave,"music.wav")
 
 end_whole_time = time.time()
 elapsed_whole_time = end_whole_time - start_whole_time
