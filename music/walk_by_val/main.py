@@ -8,8 +8,6 @@ import image
 import music
 import sys
 
-
-
 start_whole_time = time.time()
 sr = 44100 # sampling rate
 
@@ -23,13 +21,15 @@ img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
 ## image parameters -------------
 partition_num_width = 10
 partition_num_height = 10
-last_path_order = 20
+last_orbit_order = 20
 first_shift = 1
 repeatable_num = 3
-img_prm = [partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num]
+img_size = 400
+mode_name = "mldy"
+dir_name = "orbit"
+img_prm = [partition_num_width, partition_num_height, last_orbit_order, first_shift, repeatable_num, img_size, mode_name, dir_name]
 
 ## music parameters -------------
-is_loop = 0
 is_cut_loop = 0
 cut_loop_num = 1
 keyname = "F_mj"
@@ -42,23 +42,25 @@ isnt_degeneratable = 1
 bpm = 150
 loop_count = 8
 whole_wave_length = 0
-msc_prm = [keyname, first_octave, plus_octave, key_id_shift, first_time_ratio, time_length_ratio, isnt_degeneratable, bpm, loop_count, sr, is_loop, is_cut_loop, cut_loop_num, whole_wave_length]
+msc_prm = [keyname, first_octave, plus_octave, key_id_shift, first_time_ratio, time_length_ratio, isnt_degeneratable, bpm, loop_count, sr, mode_name, is_cut_loop, cut_loop_num, whole_wave_length]
 
 ## img2wave -------------
-path_hsv = image.img2path_hsv(img, img_prm)
-melody_wave = music.path_hsv2wave(path_hsv, msc_prm)
+orbit_hsv = image.img2orbit_hsv(img, img_prm)
+melody_wave = music.orbit_hsv2wave(orbit_hsv, msc_prm)
 
 # loop -------------
 ## image parameters -------------
 partition_num_width = 3
 partition_num_height = 3
-last_path_order = 100
+last_orbit_order = 100
 first_shift = 1
 repeatable_num = 3
-img_prm = [partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num]
+img_size = 400
+mode_name = "loop"
+dir_name = "orbit"
+img_prm = [partition_num_width, partition_num_height, last_orbit_order, first_shift, repeatable_num, img_size, mode_name, dir_name]
 
 ## music parameters -------------
-is_loop = 1
 is_cut_loop = 1
 cut_loop_num = 1
 keyname = "F_mj"
@@ -71,10 +73,10 @@ isnt_degeneratable = 0
 bpm = 150
 loop_count = 4
 whole_wave_length = len(melody_wave)
-msc_prm = [keyname, first_octave, plus_octave, key_id_shift, first_time_ratio, time_length_ratio, isnt_degeneratable, bpm, loop_count, sr, is_loop, is_cut_loop, cut_loop_num, whole_wave_length]
+msc_prm = [keyname, first_octave, plus_octave, key_id_shift, first_time_ratio, time_length_ratio, isnt_degeneratable, bpm, loop_count, sr, mode_name, is_cut_loop, cut_loop_num, whole_wave_length]
 ## img2wave -------------
-path_hsv = image.img2path_hsv(img, img_prm)
-loop_wave = music.path_hsv2wave(path_hsv, msc_prm)
+orbit_hsv = image.img2orbit_hsv(img, img_prm)
+loop_wave = music.orbit_hsv2wave(orbit_hsv, msc_prm)
 
 # unify melody and loop -------------
 

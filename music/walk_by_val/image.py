@@ -8,6 +8,7 @@ import math
 import wave
 import struct
 import random
+import os
 
 # # image
 def partition1d(lst, partition_num, is_length):
@@ -194,14 +195,20 @@ def jump_unknown(present_id, unique_past_id, unique_all_id, reduced_color, selec
     next_id = decide_next(present_id, rest_id, reduced_color, selection_mode)
     return(next_id)
 
-def mk_reduced_color_img(img_size, partition_num_width, partition_num_height, path_id, reduced_rgb, label_name):
+def mk_reduced_color_img(img_size, partition_num_width, partition_num_height, orbit_id, reduced_rgb, mode_name, dir_name):
+    if os.path.isdir(dir_name):
+        print("The directory '"+dir_name+"' exists. ")
+    else:
+        os.mkdir(dir_name)
+        print("The directory '"+dir_name+"' was made. ")
+
     element_img_size = int(img_size/max([partition_num_height, partition_num_width])) # pixel
-    print(element_img_size)
+    #print(element_img_size)
     reduced_color_img = np.zeros((element_img_size*partition_num_height, element_img_size*partition_num_width, 3), np.uint8)
     pointer_edge_px = int(element_img_size/3)
 
-    for path_order in range(len(path_id)):
-        id_width, id_height = path_id[path_order]
+    for orbit_order in range(len(orbit_id)):
+        id_width, id_height = orbit_id[orbit_order]
 
         img_pt1 = [element_img_size*id_width,                 element_img_size*id_height]
         img_pt2 = [element_img_size*(id_width + 1) - 1, element_img_size*(id_height + 1) - 1]
@@ -209,7 +216,7 @@ def mk_reduced_color_img(img_size, partition_num_width, partition_num_height, pa
         pt_pt2   = [img_pt2[0] -  pointer_edge_px - 1, img_pt2[1] -  pointer_edge_px - 1]
         cv2.rectangle(reduced_color_img, (img_pt1[0], img_pt1[1]), (img_pt2[0], img_pt2[1]), reduced_rgb[id_height, id_width], -1, 0)
         cv2.rectangle(reduced_color_img, (pt_pt1[0],    pt_pt1[1]),   (pt_pt2[0],    pt_pt2[1]),   np.array([255.,255.,255.]),            -1, 0)
-        cv2.imwrite("path/"+label_name+"_reduced_color_img_"+str(path_order)+".jpg", cv2.cvtColor(reduced_color_img,cv2.COLOR_RGB2BGR) )
+        cv2.imwrite(dir_name+"/"+mode_name+"_reduced_color_img_"+str(orbit_order)+".jpg", cv2.cvtColor(reduced_color_img,cv2.COLOR_RGB2BGR) )
         cv2.rectangle(reduced_color_img, (img_pt1[0], img_pt1[1]), (img_pt2[0], img_pt2[1]), reduced_rgb[id_height, id_width], -1, 0)
 
     return(reduced_color_img)
@@ -225,10 +232,10 @@ def normalize1d(array):
     
     return(normalized_array)
 
-def path_array(path_id, input_array):
+def orbit_array(orbit_id, input_array):
     array = []
-    for path_order in range(len(path_id)):
-        id_width, id_height = path_id[path_order]
+    for orbit_order in range(len(orbit_id)):
+        id_width, id_height = orbit_id[orbit_order]
         array.append(input_array[id_height, id_width])
     array = np.array(array)
     return(array)
@@ -258,7 +265,7 @@ def mk_reduced_hsv(partitioned_img, partition_num_height, partition_num_width):
     return(reduced_hsv)
 
 
-def img2path(img, partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num):
+def img2orbit(img, partition_num_width, partition_num_height, last_orbit_order, first_shift, repeatable_num):
 
     first_id_width = int(partition_num_width/2)
     first_id_height = int(partition_num_height/2)
@@ -281,14 +288,14 @@ def img2path(img, partition_num_width, partition_num_height, last_path_order, fi
 
     reduced_h = reduced_hsv[:,:,0]
 
-    path_order = 0
+    orbit_order = 0
     reduced_color = reduced_h
     unique_past_id = set([])
 
-    while (len(unique_past_id) != len(unique_all_id)) and (path_order <= last_path_order) :
-        if(path_order == 0):
+    while (len(unique_past_id) != len(unique_all_id)) and (orbit_order <= last_orbit_order) :
+        if(orbit_order == 0):
             present_id = [first_id_width, first_id_height]
-            path_id = [present_id]
+            orbit_id = [present_id]
             shift = first_shift
             shift_lst = []
             for i in range(partition_num_height):
@@ -297,15 +304,15 @@ def img2path(img, partition_num_width, partition_num_height, last_path_order, fi
                     a_width_shift.append(first_shift)
                 shift_lst.append(a_width_shift)
 
-        if(path_order >= 1):
+        if(orbit_order >= 1):
             previous_id = present_id
             present_id = next_id
-            path_id.append(present_id)
+            orbit_id.append(present_id)
             shift, shift_lst = decide_shift(present_id, unique_past_id, shift_lst)
 
         candidates = make_all_candidate(present_id, shift)
 
-        if(path_order >= 1):
+        if(orbit_order >= 1):
             candidates = dont_back(previous_id, candidates)
 
         candidates = select_available(present_id, candidates, id_minmax)
@@ -319,25 +326,27 @@ def img2path(img, partition_num_width, partition_num_height, last_path_order, fi
 
         unique_past_id.add( str(present_id[0])+","+str(present_id[1]) )
 
-        path_order += 1
+        orbit_order += 1
         
         
-    return(path_id, reduced_rgb, reduced_hsv)
+    return(orbit_id, reduced_rgb, reduced_hsv)
 
 
-def img2path_hsv(img, img_prm):
-    partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num = img_prm
+def img2orbit_hsv(img, img_prm):
+    partition_num_width, partition_num_height, last_orbit_order, first_shift, repeatable_num, img_size, mode_name, dir_name = img_prm
 
-    path_id, reduced_rgb, reduced_hsv = img2path(img, partition_num_width, partition_num_height, last_path_order, first_shift, repeatable_num)
+    orbit_id, reduced_rgb, reduced_hsv = img2orbit(img, partition_num_width, partition_num_height, last_orbit_order, first_shift, repeatable_num)
 
-    path_h = path_array(path_id, reduced_hsv[:,:,0])
-    path_s = path_array(path_id, reduced_hsv[:,:,1])
-    path_v = path_array(path_id, reduced_hsv[:,:,2])
+    reduced_color_img = mk_reduced_color_img(img_size, partition_num_width, partition_num_height, orbit_id, reduced_rgb, mode_name, dir_name)
 
-    path_normalized_h = (path_h)/360
-    path_normalized_s = (path_s)/1
-    path_normalized_v = (path_v)/1
-    path_normalized_hsv = [path_normalized_h, path_normalized_s, path_normalized_v]
+    orbit_h = orbit_array(orbit_id, reduced_hsv[:,:,0])
+    orbit_s = orbit_array(orbit_id, reduced_hsv[:,:,1])
+    orbit_v = orbit_array(orbit_id, reduced_hsv[:,:,2])
 
-    return(path_normalized_hsv)
+    orbit_normalized_h = (orbit_h)/360
+    orbit_normalized_s = (orbit_s)/1
+    orbit_normalized_v = (orbit_v)/1
+    orbit_normalized_hsv = [orbit_normalized_h, orbit_normalized_s, orbit_normalized_v]
+
+    return(orbit_normalized_hsv)
 
